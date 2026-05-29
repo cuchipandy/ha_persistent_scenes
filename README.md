@@ -1,5 +1,5 @@
 <p>
-  <img src="https://raw.githubusercontent.com/cuchipandy/ha_persistent_scenes/blob/main/images/persistent_scenes_256.png" alt="Persistent Scenes">
+  <img src="https://github.com/cuchipandy/ha_persistent_scenes/blob/main/images/persistent_scenes_256.png" alt="Persistent Scenes">
 </p>
 
 # Restorable Scenes for Home Assistant
