@@ -1,11 +1,11 @@
 {
-  "domain": "res_scene",
-  "name": "Res Scenes",
+  "domain": "persistent_scene",
+  "name": "Persistent Scenes",
   "version": "2025.12.9",
-  "documentation": "https://github.com/nao-pon/ha_res_scenes",
-  "issue_tracker": "https://github.com/nao-pon/ha_res_scenes/issues",
+  "documentation": "https://github.com/cuchipandy/ha_persistent_scenes",
+  "issue_tracker": "https://github.com/cuchipandy/ha_persistent_scenes/issues",
   "requirements": [],
-  "codeowners": ["@nao-pon"],
+  "codeowners": ["@nao-pon/cuchipandy"],
   "platforms": ["scene", "select"],
   "iot_class": "local_push",
   "config_flow": true
