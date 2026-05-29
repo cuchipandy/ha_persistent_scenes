@@ -711,6 +711,17 @@ class ResSceneManager:
                 target,
             )
 
+        
+        # ---- select ----
+        elif domain == "select":
+            await call_service(
+                "select",
+                SERVICE_SELECT_OPTION,
+                {ATTR_ENTITY_ID: eid, "option": state},
+                target,
+            )
+        
+        
         # ---- input_text ----
         elif domain == "input_text":
             await call_service(
