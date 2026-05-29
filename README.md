@@ -1,3 +1,7 @@
+<p>
+  <img src="https://raw.githubusercontent.com/cuchipandy/ha_persistent_scenes/blob/main/images/persistent_scenes_256.png" alt="Persistent Scenes">
+</p>
+
 # Restorable Scenes for Home Assistant
 
 This custom integration lets you create **persistent scenes** that survive Home Assistant restarts.  
