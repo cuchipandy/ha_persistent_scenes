@@ -196,17 +196,17 @@ class ResSceneManager:
         """
         Save a snapshot of the specified entities' states and attributes under the given scene id.
 
-        Takes current states for each entity in snapshot_entities and persists them as a scene. When enabled via options, lights that are off may be briefly toggled to capture full attributes (color, brightness, etc.). If an entity's current state is unavailable, a previously stored state for the same scene will be used when that previous state is valid. Persists the scene to storage and dispatches a scene-added signal.
+        Takes current states for each entity in snapshot_entities and persists them as a scene. If an entity's current state is unavailable, a previously stored state for the same scene will be used when that previous state is valid. Persists the scene to storage and dispatches a scene-added signal.
 
         Parameters:
             scene_id (str): Identifier to store the scene under.
             snapshot_entities (list): Iterable of entity IDs to include in the snapshot.
             options (dict | None): Optional scene-specific options (merged with user options). Recognized keys include:
                 - "action_timeout" (float): timeout in seconds for actions used to capture attributes.
-                - "restore_light_attributes" (bool): if true, attempt to capture full light attributes by briefly turning lights on/off.
+                - "restore_light_attributes" (bool):
         """
-        _options = deepcopy(self._user_options)
-        _options.update(options or {})
+        if options is not None:
+            states["_options"] = options
         states = {}
 
         for eid in snapshot_entities:
@@ -333,7 +333,7 @@ class ResSceneManager:
                 - "state": The saved state value (string).
                 - "attributes": Mapping of attribute names to saved values; attributes with value None are ignored.
             options (dict): Runtime options that affect restoration behavior. Recognized keys:
-                - "restore_light_attributes" (bool): If true, restore light attributes even when the saved state is STATE_OFF.
+                - "restore_light_attributes" (bool):
                 - "action_timeout" (float): Timeout in seconds used when waiting for expected state changes.
         """
         domain = eid.split(".")[0]
