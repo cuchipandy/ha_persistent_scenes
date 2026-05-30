@@ -427,7 +427,12 @@ class ResSceneManager:
         return success
 
     async def apply_state(self, eid: str, info: dict, options: dict):
-        _LOGGER.warning("APPLY_STATE: %s", eid)        
+        _LOGGER.error(
+            "APPLY_STATE: eid=%s domain=%s state=%s",
+            eid,
+            eid.split(".")[0],
+            info.get("state"),
+        )    
         """
         Restore a single entity to its saved state and attributes by invoking the appropriate Home Assistant services.
 
