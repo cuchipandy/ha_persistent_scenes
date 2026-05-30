@@ -21,10 +21,7 @@ from homeassistant.components.media_player.const import (
     SERVICE_SELECT_SOURCE,
 )
 from homeassistant.const import (
-    ATTR_DOMAIN,
     ATTR_ENTITY_ID,
-    ATTR_SERVICE,
-    ATTR_SERVICE_DATA,
     ATTR_STATE,
     ATTR_TEMPERATURE,
     SERVICE_CLOSE_COVER,
@@ -58,7 +55,6 @@ from .const import ACTION_TIMEOUT_DEFAULT, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-DISPATCHER_UPDATE = "res_scene_updated"
 SERVICE_CALL_DELAY = 1.0  # Delay in seconds when calling a service to the same entity
 
 COLOR_MODE_ATTRS = {
@@ -186,37 +182,7 @@ class ResSceneManager:
 
         return result
 
-    async def async_run_actions_sequentially(self, actions: list[dict]):
-        """
-        Execute a sequence of service actions one after another, awaiting each action's observed state change.
-
-        Parameters:
-            actions (list[dict]): List of action dictionaries. Each action must include:
-                - 'domain' (str): Service domain to call.
-                - 'service' (str): Service name to call.
-                - 'entity_id' (str): Entity to target and observe for state changes.
-                - 'service_data' (dict, optional): Data to pass to the service call.
-                - 'expected' (str, optional): Expected new state value to consider the action matched.
-                - 'timeout' (float, optional): Seconds to wait for the expected state; falls back to ACTION_TIMEOUT_DEFAULT.
-
-        Returns:
-            list[dict]: A list of result dictionaries for each action. Each result contains keys such as
-            'entity_id', 'old_state', 'new_state', 'matched' (true if expected state was observed), and
-            'timeout' (true if the wait expired).
-        """
-        results = []
-        for action in actions:
-            result = await self.async_call_and_wait_state(
-                entity_id=action[ATTR_ENTITY_ID],
-                domain=action[ATTR_DOMAIN],
-                service=action[ATTR_SERVICE],
-                service_data=action.get(ATTR_SERVICE_DATA, {}),
-                expected=action.get("expected"),
-                timeout=action.get("timeout", ACTION_TIMEOUT_DEFAULT),
-            )
-            results.append(result)
-        return results
-
+    
     async def restore_scenes(self):
         """Restore saved scenes on restart (EntityRegistry creation)"""
         for scene_id in self.stored_data.keys():
@@ -242,61 +208,7 @@ class ResSceneManager:
         _options = deepcopy(self._user_options)
         _options.update(options or {})
         states = {}
-        timeout = _options.get("action_timeout", ACTION_TIMEOUT_DEFAULT)
 
-        async def snapshot_light(eid: str, state: str):
-            """
-            Capture a light's current on-state attributes by briefly turning it on and then off to create a snapshot.
-
-            Parameters:
-                eid (str): Entity ID of the light to snapshot.
-                state (str): Original state string to record as the saved state.
-
-            Returns:
-                dict: {"state_obj": <state object>, "save_state": <state str>} containing the captured state object and the saved state string if the snapshot succeeded, or None if the snapshot failed.
-            """
-            results = await self.async_run_actions_sequentially(
-                [
-                    {
-                        ATTR_DOMAIN: "light",
-                        ATTR_SERVICE: SERVICE_TURN_ON,
-                        ATTR_ENTITY_ID: eid,
-                        ATTR_SERVICE_DATA: {"transition": 0},
-                        "expected": STATE_ON,
-                        "timeout": timeout,
-                    },
-                    {
-                        ATTR_DOMAIN: "light",
-                        ATTR_SERVICE: SERVICE_TURN_OFF,
-                        ATTR_ENTITY_ID: eid,
-                        ATTR_SERVICE_DATA: {"transition": 0},
-                        "expected": STATE_OFF,
-                        "timeout": timeout,
-                    },
-                ]
-            )
-            turn_on_result = results[0]
-            turn_off_result = results[1]
-            if turn_on_result.get("timeout") or not turn_on_result.get("matched"):
-                _LOGGER.warning(
-                    "Failed to capture light attributes for %s: turn_on %s",
-                    eid,
-                    "timed out"
-                    if turn_on_result.get("timeout")
-                    else "did not match expected state",
-                )
-                return None
-            if turn_off_result.get("timeout") or not turn_off_result.get("matched"):
-                _LOGGER.warning(
-                    "Light %s did not reach 'off' state after snapshot: %s",
-                    eid,
-                    "timed out"
-                    if turn_off_result.get("timeout")
-                    else "did not match expected state",
-                )
-            return {"state_obj": turn_on_result.get("new_state"), "save_state": state}
-
-        tasks = []
         for eid in snapshot_entities:
             domain = eid.split(".")[0]
             if domain in (
@@ -325,21 +237,6 @@ class ResSceneManager:
                 else:
                     states[eid] = {
                         ATTR_STATE: state_obj.state,
-                        "attributes": deepcopy(state_obj.attributes),
-                    }
-
-        # Run in parallel and combine the results
-        if tasks:
-            results = await asyncio.gather(*tasks)
-            for result in results:
-                if result is None:
-                    continue
-                state_obj = result["state_obj"]
-                save_state = result["save_state"]
-                if state_obj:
-                    eid = state_obj.entity_id
-                    states[eid] = {
-                        ATTR_STATE: save_state,
                         "attributes": deepcopy(state_obj.attributes),
                     }
 
@@ -501,12 +398,7 @@ class ResSceneManager:
             # Escena OFF y luz ya OFF -> no hacer nada
             if state == STATE_OFF and target_state.state == STATE_OFF:
                 return
-        
-            restore_attrs = (
-                options.get("restore_light_attributes", False)
-                and state == STATE_ON
-            )
-            
+                  
             should_restore = state == STATE_ON
 
             allowed_attrs = None
