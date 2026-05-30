@@ -603,55 +603,71 @@ class ResSceneManager:
         # ---- climate ----
         elif domain == "climate":
             hvac_mode = state if state not in (None, "") else None
-
+        
+            # 1. Restaurar modo HVAC (off/heat/cool/etc)
             if hvac_mode:
                 await call_service(
                     "climate",
                     "set_hvac_mode",
                     {
-                        ATTR_ENTITY_ID: eid,
                         "hvac_mode": hvac_mode,
                     },
                     target,
                 )
-                
-            if hvac_mode:
-                data = {
-                    ATTR_ENTITY_ID: eid,
-                    ATTR_HVAC_MODE: hvac_mode,
-                }
-                if (
-                    hvac_mode == HVACMode.HEAT_COOL
-                    and ATTR_TARGET_TEMP_LOW in attrs
-                    and ATTR_TARGET_TEMP_HIGH in attrs
-                ):
-                    data.update(
-                        {
-                            ATTR_TARGET_TEMP_LOW: attrs[ATTR_TARGET_TEMP_LOW],
-                            ATTR_TARGET_TEMP_HIGH: attrs[ATTR_TARGET_TEMP_HIGH],
-                        }
+        
+                # Si está apagado no tiene sentido seguir
+                if hvac_mode == HVACMode.OFF or hvac_mode == "off":
+                    return
+        
+            # 2. Restaurar temperatura
+            data = {ATTR_ENTITY_ID: eid}
+        
+            if (
+                hvac_mode == HVACMode.HEAT_COOL
+                and ATTR_TARGET_TEMP_LOW in attrs
+                and ATTR_TARGET_TEMP_HIGH in attrs
+            ):
+                data.update(
+                    {
+                        ATTR_TARGET_TEMP_LOW: attrs[ATTR_TARGET_TEMP_LOW],
+                        ATTR_TARGET_TEMP_HIGH: attrs[ATTR_TARGET_TEMP_HIGH],
+                    }
+                )
+                await call_service(
+                    "climate",
+                    SERVICE_SET_TEMPERATURE,
+                    data,
+                    target,
+                )
+        
+            elif ATTR_TEMPERATURE in attrs:
+                data.update(
+                    {
+                        ATTR_TEMPERATURE: attrs[ATTR_TEMPERATURE],
+                    }
+                )
+                await call_service(
+                    "climate",
+                    SERVICE_SET_TEMPERATURE,
+                    data,
+                    target,
+                )
+        
+            # 3. Restaurar atributos secundarios
+            for key in [
+                ATTR_FAN_MODE,
+                ATTR_SWING_MODE,
+                ATTR_PRESET_MODE,
+                ATTR_HUMIDITY,
+            ]:
+                if key in attrs:
+                    svc = f"set_{key}"
+                    await call_service(
+                        "climate",
+                        svc,
+                        {key: attrs[key]},
+                        target,
                     )
-                    await call_service("climate", SERVICE_SET_TEMPERATURE, data, target)
-                elif ATTR_TEMPERATURE in attrs:
-                    data.update({ATTR_TEMPERATURE: attrs[ATTR_TEMPERATURE]})
-                    await call_service("climate", SERVICE_SET_TEMPERATURE, data, target)
-
-                # 3. other sub-attributes
-                for key in [
-                    ATTR_FAN_MODE,
-                    ATTR_SWING_MODE,
-                    ATTR_PRESET_MODE,
-                    ATTR_HUMIDITY,
-                ]:
-                    if key in attrs:
-                        svc = f"set_{key}"
-                        await call_service(
-                            "climate",
-                            svc,
-                            {ATTR_ENTITY_ID: eid, key: attrs[key]},
-                            target,
-                        )
-
         # ---- media_player ----
         elif domain == "media_player":
             if state == STATE_ON:
