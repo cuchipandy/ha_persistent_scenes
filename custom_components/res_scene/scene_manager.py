@@ -497,6 +497,11 @@ class ResSceneManager:
 
         # ---- light ----
         if domain == "light":
+        
+            # Escena OFF y luz ya OFF -> no hacer nada
+            if state == STATE_OFF and target_state.state == STATE_OFF:
+                return
+        
             restore_attrs = (
                 options.get("restore_light_attributes", False)
                 and state == STATE_ON
