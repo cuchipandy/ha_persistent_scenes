@@ -605,28 +605,28 @@ class ResSceneManager:
             hvac_mode = state if state not in (None, "") else None
         
             # 1. Restaurar modo HVAC (off/heat/cool/etc)
-                if hvac_mode == "off":
-                    await call_service(
-                        "climate",
-                        "turn_off",
-                        {},
-                        target,
-                    )
-                    return
-                
-                elif hvac_mode:
-                    await call_service(
-                        "climate",
-                        "set_hvac_mode",
-                        {
-                            "hvac_mode": hvac_mode,
-                        },
-                        target,
-                    )
+            if hvac_mode == "off":
+                await call_service(
+                    "climate",
+                    "turn_off",
+                    {},
+                    target,
+                )
+                return
+
+            elif hvac_mode:
+                await call_service(
+                    "climate",
+                    "set_hvac_mode",
+                    {
+                        "hvac_mode": hvac_mode,
+                    },
+                    target,
+                )
         
-                # Si está apagado no tiene sentido seguir
-                if hvac_mode == HVACMode.OFF or hvac_mode == "off":
-                    return
+            # Si está apagado no tiene sentido seguir
+            if hvac_mode == HVACMode.OFF or hvac_mode == "off":
+                return
         
             # 2. Restaurar temperatura
             data = {ATTR_ENTITY_ID: eid}
