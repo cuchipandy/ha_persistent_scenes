@@ -87,7 +87,6 @@ class ResSceneEntity(Scene):
         self._extra_data = data
         self.async_write_ha_state()
     async def async_activate(self, **kwargs: Any):
-        _LOGGER.warning("SCENE KWARGS = %s", kwargs)
         """Restore saved state + attributes"""
         await self.manager.apply_scene(
             self._scene_id,
