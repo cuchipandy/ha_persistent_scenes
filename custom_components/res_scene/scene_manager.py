@@ -724,6 +724,11 @@ class ResSceneManager:
 
         
         # ---- select ----
+        _LOGGER.warning(
+            "RESTORING SELECT: %s -> %s",
+            eid,
+            state,
+        )
         elif domain == "select":
             await call_service(
                 "select",
