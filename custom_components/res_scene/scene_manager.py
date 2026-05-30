@@ -565,8 +565,8 @@ class ResSceneManager:
 
         # ---- cover ----
         elif domain == "cover":
-            position = attrs.get("position")
-            tilt = attrs.get("tilt_position")
+            position = attrs.get("current_position")
+            tilt = attrs.get("current_tilt_position")
 
             if position is not None:
                 await call_service(
