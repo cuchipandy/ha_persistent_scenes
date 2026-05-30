@@ -45,6 +45,7 @@ class ResSceneOptionsFlow(config_entries.OptionsFlow):
         scenes = list(manager.stored_data.keys())
         scenes_select = sorted(scenes)
 
+
         schema = vol.Schema(
             {
                 vol.Required(
@@ -64,7 +65,7 @@ class ResSceneOptionsFlow(config_entries.OptionsFlow):
                 vol.Optional("rename_from"): vol.In(scenes_select),
                 vol.Optional("rename_to", default=""): str,
             }
-        )
+        )        
 
         if user_input is not None:
             delete_id = user_input.pop("delete_scene", None)
