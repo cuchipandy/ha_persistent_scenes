@@ -1,3 +1,3 @@
-DOMAIN = "res_scene"
+DOMAIN = "persistent_scene"
 STORE_VERSION = 1
 ACTION_TIMEOUT_DEFAULT = 20
