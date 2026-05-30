@@ -1,3 +1,5 @@
+import logging
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
@@ -6,6 +8,8 @@ from homeassistant.helpers.storage import Store
 
 from .const import ACTION_TIMEOUT_DEFAULT, DOMAIN, STORE_VERSION
 from .scene_manager import ResSceneManager
+
+_LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["scene", "select"]
 
