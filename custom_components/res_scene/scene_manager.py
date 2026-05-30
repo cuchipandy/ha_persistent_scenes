@@ -606,6 +606,7 @@ class ResSceneManager:
         
             # 1. Restaurar modo HVAC (off/heat/cool/etc)
             if hvac_mode == "off":
+                _LOGGER.warning("CLIMATE TURN_OFF %s", eid)
                 await call_service(
                     "climate",
                     "turn_off",
@@ -615,6 +616,7 @@ class ResSceneManager:
                 return
 
             elif hvac_mode:
+                _LOGGER.warning("CLIMATE TURN_OFF_SET_HVAC %s", eid)
                 await call_service(
                     "climate",
                     "set_hvac_mode",
@@ -744,7 +746,6 @@ class ResSceneManager:
                 target,
             )
 
-        # ---- input_select ----
         elif domain == "input_select":
             await call_service(
                 "input_select",
@@ -753,14 +754,14 @@ class ResSceneManager:
                 target,
             )
 
-        
         # ---- select ----
-        _LOGGER.warning(
-            "RESTORING SELECT: %s -> %s",
-            eid,
-            state,
-        )
         elif domain == "select":
+            _LOGGER.warning(
+                "RESTORING SELECT: %s -> %s",
+                eid,
+                state,
+            )
+
             await call_service(
                 "select",
                 SERVICE_SELECT_OPTION,
