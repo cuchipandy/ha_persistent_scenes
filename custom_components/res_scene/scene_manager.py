@@ -599,6 +599,17 @@ class ResSceneManager:
             hvac_mode = state if state not in (None, "") else None
 
             if hvac_mode:
+                await call_service(
+                    "climate",
+                    "set_hvac_mode",
+                    {
+                        ATTR_ENTITY_ID: eid,
+                        "hvac_mode": hvac_mode,
+                    },
+                    target,
+                )
+                
+            if hvac_mode:
                 data = {
                     ATTR_ENTITY_ID: eid,
                     ATTR_HVAC_MODE: hvac_mode,
