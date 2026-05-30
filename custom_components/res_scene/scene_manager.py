@@ -314,15 +314,15 @@ class ResSceneManager:
                 continue
 
             if state_obj := self.hass.states.get(eid):
-                if (
-                    _options.get("restore_light_attributes")
-                    and domain == "light"
-                    and state_obj.state == STATE_OFF
-                ):
-                    # Make async snapshot task
-                    tasks.append(snapshot_light(eid, STATE_OFF))
+            
+                # Si la luz está apagada, guardar solo el estado
+                if domain == "light" and state_obj.state == STATE_OFF:
+                    states[eid] = {
+                        ATTR_STATE: STATE_OFF,
+                        "attributes": {},
+                    }
+            
                 else:
-                    # Add what is readily available immediately
                     states[eid] = {
                         ATTR_STATE: state_obj.state,
                         "attributes": deepcopy(state_obj.attributes),
