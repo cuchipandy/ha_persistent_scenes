@@ -125,17 +125,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await manager.save_scene(scene_id, list(snapshot_entities), options)
 
     async def delete_scene(call):
-        """
-        Delete the scene associated with the provided scene entity, if one exists.
-
-        Parameters:
-            call (ServiceCall): Service call data containing the "entity_id" of the scene entity to delete. If "entity_id" is missing or the entity is not associated with a stored scene, the function does nothing.
-        """
         entity_id = call.data.get("entity_id")
+    
+        _LOGGER.warning("DELETE REQUEST: %s", entity_id)
+        _LOGGER.warning(
+            "REGISTERED: %s",
+            list(hass.data[DOMAIN]["entities"].keys())
+        )
+    
         if entity_id:
             if entity := hass.data[DOMAIN]["entities"].get(entity_id):
                 scene_id = entity._scene_id
+                _LOGGER.warning("FOUND SCENE: %s", scene_id)
                 await manager.delete_scene(scene_id)
+            else:
+                _LOGGER.warning("ENTITY NOT FOUND")
 
     async def apply_scene(call):
         """
