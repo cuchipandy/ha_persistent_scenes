@@ -414,7 +414,7 @@ class ResSceneManager:
                 await self.apply_state(eid, info, _options)
             except Exception as e:  # noqa: BLE001
                 success = False
-                _LOGGER.error(
+                _LOGGER.debug(
                     "Failed to apply state for %s in scene %s: %s", eid, scene_id, e
                 )
 
@@ -427,12 +427,6 @@ class ResSceneManager:
         return success
 
     async def apply_state(self, eid: str, info: dict, options: dict):
-        _LOGGER.error(
-            "APPLY_STATE: eid=%s domain=%s state=%s",
-            eid,
-            eid.split(".")[0],
-            info.get("state"),
-        )    
         """
         Restore a single entity to its saved state and attributes by invoking the appropriate Home Assistant services.
 
@@ -606,7 +600,6 @@ class ResSceneManager:
         
             # 1. Restaurar modo HVAC (off/heat/cool/etc)
             if hvac_mode == "off":
-                _LOGGER.warning("CLIMATE TURN_OFF %s", eid)
                 await call_service(
                     "climate",
                     "turn_off",
@@ -616,7 +609,6 @@ class ResSceneManager:
                 return
 
             elif hvac_mode:
-                _LOGGER.warning("CLIMATE TURN_OFF_SET_HVAC %s", eid)
                 await call_service(
                     "climate",
                     "set_hvac_mode",
@@ -756,12 +748,6 @@ class ResSceneManager:
 
         # ---- select ----
         elif domain == "select":
-            _LOGGER.warning(
-                "RESTORING SELECT: %s -> %s",
-                eid,
-                state,
-            )
-
             await call_service(
                 "select",
                 SERVICE_SELECT_OPTION,
