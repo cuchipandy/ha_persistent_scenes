@@ -497,8 +497,12 @@ class ResSceneManager:
 
         # ---- light ----
         if domain == "light":
-            restore_attrs = options.get("restore_light_attributes", False)
-            should_restore = (state == STATE_ON) or restore_attrs
+            restore_attrs = (
+                options.get("restore_light_attributes", False)
+                and state == STATE_ON
+            )
+            
+            should_restore = state == STATE_ON
 
             allowed_attrs = None
             for attr, allowed_keys in ATTR_ATTRS.items():
