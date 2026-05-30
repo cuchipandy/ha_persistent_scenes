@@ -48,12 +48,18 @@ class ResSceneOptionsFlow(config_entries.OptionsFlow):
         schema = vol.Schema(
             {
                 vol.Required(
-                    "restore_light_attributes", default=restore_light_attributes
+                    "restore_light_attributes",
+                    default=restore_light_attributes,
                 ): bool,
-                vol.Required("action_timeout", default=float(action_timeout) 
+        
+                vol.Required(
+                    "action_timeout",
+                    default=float(action_timeout),
                 ): vol.All(
                     vol.Coerce(float),
                     vol.Range(min=0.5),
+                ),
+        
                 vol.Optional("delete_scene"): vol.In(scenes_select),
                 vol.Optional("rename_from"): vol.In(scenes_select),
                 vol.Optional("rename_to", default=""): str,
