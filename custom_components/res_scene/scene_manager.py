@@ -205,8 +205,6 @@ class ResSceneManager:
                 - "action_timeout" (float): timeout in seconds for actions used to capture attributes.
                 - "restore_light_attributes" (bool):
         """
-        if options is not None:
-            states["_options"] = options
         states = {}
 
         for eid in snapshot_entities:
