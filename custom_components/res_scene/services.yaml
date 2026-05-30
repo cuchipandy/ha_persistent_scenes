@@ -78,5 +78,5 @@ delete:
       selector:
         entity:
           domain: scene
-          integration: res_scene
+          integration: persistent_scene
       example: scene.evening_mode
