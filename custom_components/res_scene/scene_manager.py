@@ -388,7 +388,7 @@ class ResSceneManager:
         # dispatcher notify
         async_dispatcher_send(self.hass, f"{DOMAIN}_scene_removed", scene_id)
 
-    async def apply_scene(self, scene_id) -> bool:
+    async def apply_scene(self, scene_id, transition: float = 0,) -> bool:    
         """Apply a saved scene"""
         if scene_id not in self.stored_data:
             _LOGGER.warning("Scene %s not found", scene_id)
@@ -411,7 +411,7 @@ class ResSceneManager:
         async def safe_apply(eid, info):
             nonlocal success
             try:
-                await self.apply_state(eid, info, _options)
+                await self.apply_state(eid, info, _options, transition)
             except Exception as e:  # noqa: BLE001
                 success = False
                 _LOGGER.debug(
@@ -426,7 +426,7 @@ class ResSceneManager:
             _LOGGER.warning("Scene %s applied with errors", scene_id)
         return success
 
-    async def apply_state(self, eid: str, info: dict, options: dict):
+    async def apply_state(self, eid: str, info: dict, options: dict, transition: float = 0):
         """
         Restore a single entity to its saved state and attributes by invoking the appropriate Home Assistant services.
 
@@ -526,7 +526,7 @@ class ResSceneManager:
                 safe_attrs.pop("brightness_pct")
 
             if should_restore:
-                data = {ATTR_ENTITY_ID: eid, "transition": 0, **safe_attrs}
+                data = {ATTR_ENTITY_ID: eid, "transition": transition, **safe_attrs}
                 result = await self.async_call_and_wait_state(
                     entity_id=eid,
                     domain="light",
@@ -545,7 +545,7 @@ class ResSceneManager:
                     )
 
             if state == STATE_OFF:
-                data = {ATTR_ENTITY_ID: eid, "transition": 0}
+                data = {ATTR_ENTITY_ID: eid, "transition": transition}
                 result = await self.async_call_and_wait_state(
                     entity_id=eid,
                     domain="light",
