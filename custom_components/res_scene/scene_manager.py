@@ -351,12 +351,12 @@ class ResSceneManager:
             STATE_UNAVAILABLE,
             STATE_UNKNOWN,
         ):
-        _LOGGER.warning(
-            "Target entity is unusable: %s (current state=%s)",
-            eid,
-            None if target_state is None else target_state.state,
-        )
-        return
+            _LOGGER.warning(
+                "Target entity is unusable: %s (current state=%s)",
+                eid,
+                None if target_state is None else target_state.state,
+            )
+            return
 
         # skip non-restorable domains
         if domain in (
