@@ -224,7 +224,16 @@ class ResSceneManager:
                 continue
 
             if state_obj := self.hass.states.get(eid):
-            
+                if state_obj.state in (
+                    STATE_UNKNOWN,
+                    STATE_UNAVAILABLE,
+                ):
+                    _LOGGER.debug(
+                        "Skipping %s because state is %s",
+                        eid,
+                        state_obj.state,
+                    )
+                    continue            
                 # Si la luz está apagada, guardar solo el estado
                 if domain == "light" and state_obj.state == STATE_OFF:
                     states[eid] = {
