@@ -343,7 +343,7 @@ class ResSceneManager:
                 attrs[_key] = _value
 
         if not state:
-            _LOGGER.warning("Saved state is None, skip.")
+            _LOGGER.warning("Saved state is None, skip: %s", eid)
             return
 
         target_state = self.hass.states.get(eid)
@@ -351,8 +351,12 @@ class ResSceneManager:
             STATE_UNAVAILABLE,
             STATE_UNKNOWN,
         ):
-            _LOGGER.warning("Target entity is unusable.")
-            return
+        _LOGGER.warning(
+            "Target entity is unusable: %s (current state=%s)",
+            eid,
+            None if target_state is None else target_state.state,
+        )
+        return
 
         # skip non-restorable domains
         if domain in (
